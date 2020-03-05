@@ -40,7 +40,13 @@ class ProductsProvider with ChangeNotifier {
     ),
   ];
 
+  // var _showFavoritesOnly = false;
+
   List<Product> get items {
+
+    // if(_showFavoritesOnly) {
+    //   return _items.where((element) => element.isFavorite).toList();
+    // }
     return [..._items];
   }
 
@@ -49,6 +55,10 @@ class ProductsProvider with ChangeNotifier {
       .firstWhere(
       (element) => element.id == id
     );
+  }
+
+  List<Product> get favoriteItems {
+    return _items.where((element) => element.isFavorite).toList();
   }
 
 
