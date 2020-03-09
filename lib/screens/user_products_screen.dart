@@ -40,6 +40,7 @@ class UserProductsScreen extends StatelessWidget {
             children: <Widget>[
 
               UserProductItem(
+                productsProvider.items[index].id,
                 productsProvider.items[index].title,
                 productsProvider.items[index].imageUrl,
               ),
