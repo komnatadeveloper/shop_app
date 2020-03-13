@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 
 import '../providers/cart_provider.dart';
+import '../providers/products_provider.dart';
 
 import './cart_screen.dart';
 
@@ -20,18 +21,51 @@ enum FilterOptions {
 
 
 class ProductsOverviewScreen extends StatefulWidget {
-
-
-
-
-
   @override
   _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
 }
 
+
+// STATE
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   var _showOnlyFavorites = false;
+  var _isInit = true;
+  var _isLoading = false;
+
+  @override
+  void initState()  {
+    // Future.delayed(Duration.zero)
+    //   .then( ( _ ) {
+    //       Provider.of<ProductsProvider>(context).fetchAndSetProducts();
+    //     } 
+    // );
+
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    if( _isInit ) {
+
+      setState(() {        
+        _isLoading = true;
+      });
+
+      Provider.of<ProductsProvider>(context).fetchAndSetProducts()
+      .then( ( _ ) {
+
+        setState(() {          
+          _isLoading = false;
+        });
+
+      } 
+    );
+      _isInit = false;
+    }
+    super.didChangeDependencies();
+  }
 
 
   @override
@@ -88,7 +122,13 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid( _showOnlyFavorites ),
+      body: _isLoading
+        ?
+        Center(
+          child: CircularProgressIndicator(),
+        ) 
+        :
+        ProductsGrid( _showOnlyFavorites ),
     );
   }
 }

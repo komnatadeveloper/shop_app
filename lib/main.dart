@@ -34,10 +34,19 @@ class MyApp extends StatelessWidget {
 
       child: MaterialApp(
         title: 'MyShop',
-        theme: ThemeData(
+        theme: ThemeData( 
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
-          fontFamily: 'Lato'
+          fontFamily: 'Lato',
+          // This is because of an error 2020.03.12
+            
+
+          // primaryTextTheme: TextTheme(
+          //   headline6: TextStyle(
+          //     color: Colors.orange
+          //   )
+          // )
+          // // This is because of an error 2020.03.12
         ),
         home: ProductsOverviewScreen(),
 
@@ -52,5 +61,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
