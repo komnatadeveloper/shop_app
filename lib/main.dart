@@ -26,8 +26,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: AuthProvider()
         ),
-        ChangeNotifierProvider.value(
-          value: ProductsProvider(),
+        ChangeNotifierProxyProvider<AuthProvider, ProductsProvider >(
+          create: ( ctx ) => ProductsProvider( null, [] ),
+          update: (  _,   authProvider, previousProducstProvider   ) => ProductsProvider( 
+            authProvider.token ,
+            previousProducstProvider == null 
+              ? []
+              : previousProducstProvider.items
+          ),
+          
         ),
         ChangeNotifierProvider.value(
           value: Cart(),
@@ -37,32 +44,38 @@ class MyApp extends StatelessWidget {
         ),
       ],    
 
-      child: MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData( 
-          primarySwatch: Colors.purple,
-          accentColor: Colors.deepOrange,
-          fontFamily: 'Lato',
-          // This is because of an error 2020.03.12
-            
+      child: Consumer<AuthProvider>(
+        builder: ( ctx, authData, _ ) =>  MaterialApp(
+          title: 'MyShop',
+          theme: ThemeData( 
+            primarySwatch: Colors.purple,
+            accentColor: Colors.deepOrange,
+            fontFamily: 'Lato',
+            // This is because of an error 2020.03.12
+              
 
-          // primaryTextTheme: TextTheme(
-          //   headline6: TextStyle(
-          //     color: Colors.orange
-          //   )
-          // )
-          // // This is because of an error 2020.03.12
+            // primaryTextTheme: TextTheme(
+            //   headline6: TextStyle(
+            //     color: Colors.orange
+            //   )
+            // )
+            // // This is because of an error 2020.03.12
+          ),
+          home: authData.isAuth 
+            ? ProductsOverviewScreen()        
+            : AuthScreen(),   
+
+          routes: {
+
+            ProductsOverviewScreen.routeName : (ctx) => ProductsOverviewScreen(),
+            ProductDetailScreen.routeName : (ctx) => ProductDetailScreen(),
+            CartScreen.routeName : (ctx) => CartScreen(),
+            OrdersScreen.routeName : (ctx) => OrdersScreen(),
+            UserProductsScreen.routeName : (ctx) => UserProductsScreen(),
+            EditProductScreen.routeName : (ctx) => EditProductScreen(),
+          },
         ),
-        home: AuthScreen(), //  ProductsOverviewScreen(),         
-
-        routes: {
-          ProductDetailScreen.routeName : (ctx) => ProductDetailScreen(),
-          CartScreen.routeName : (ctx) => CartScreen(),
-          OrdersScreen.routeName : (ctx) => OrdersScreen(),
-          UserProductsScreen.routeName : (ctx) => UserProductsScreen(),
-          EditProductScreen.routeName : (ctx) => EditProductScreen(),
-        },
-      ),
+      ) 
     );
   }
 }
