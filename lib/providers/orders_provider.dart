@@ -25,6 +25,9 @@ class OrderItem {
 class OrdersProvider with ChangeNotifier {
 
   List<OrderItem> _orders = [];
+  final String authToken;
+
+  OrdersProvider( this.authToken, this._orders );
 
   List<OrderItem> get orders {
     return [ ..._orders ];
@@ -32,7 +35,7 @@ class OrdersProvider with ChangeNotifier {
 
   Future<void> fetchAndSetOrders () async {
 
-    const url = 'https://komnata-shop-app.firebaseio.com/orders.json';
+    final url = 'https://komnata-shop-app.firebaseio.com/orders.json?auth=$authToken';
 
     final res = await http.get(url);
 
@@ -75,7 +78,7 @@ class OrdersProvider with ChangeNotifier {
       double total
     ) async {
 
-    const url = 'https://komnata-shop-app.firebaseio.com/orders.json';
+    final url = 'https://komnata-shop-app.firebaseio.com/orders.json?auth=$authToken';
     final timestamp = DateTime.now();
 
     final res = await http.post(

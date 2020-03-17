@@ -13,7 +13,8 @@ class ProductsProvider with ChangeNotifier {
   List<Product> _items ;
 
   final String authToken;
-  ProductsProvider( this.authToken, this._items );
+  final String userId;
+  ProductsProvider( this.authToken, this.userId, this._items );
 
 
   List<Product> get items {
@@ -35,7 +36,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> fetchAndSetProducts () async {
 
-    final url = 'https://komnata-shop-app.firebaseio.com/products.json?auth=$authToken';
+    var url = 'https://komnata-shop-app.firebaseio.com/products.json?auth=$authToken';
 
     try {
 
@@ -48,6 +49,11 @@ class ProductsProvider with ChangeNotifier {
         return;
       }
 
+      // Get Favorites
+      url = 'https://komnata-shop-app.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+      final favoriteListResponse = await http.get(url);
+      final favoriteListData = json.decode(favoriteListResponse.body);
+
       final List<Product> loadedProducts = [];
       extractedData.forEach( ( prodId, prodData ) {
         loadedProducts.add(  
@@ -56,7 +62,7 @@ class ProductsProvider with ChangeNotifier {
             title: prodData['title'],
             description: prodData['description'],
             price: prodData['price'],
-            isFavorite: prodData['isFavorite'],
+            isFavorite: favoriteListData[prodId] == null ? false : favoriteListData[prodId] ?? false,
             imageUrl: prodData['imageUrl'],
           )
         );
@@ -75,7 +81,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> addProduct( Product product ) async {
 
-    const url = 'https://komnata-shop-app.firebaseio.com/products.json';
+    final url = 'https://komnata-shop-app.firebaseio.com/products.json?auth=$authToken';
     try {
 
       final response = await  http.post(
@@ -85,7 +91,7 @@ class ProductsProvider with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
+          // 'isFavorite': product.isFavorite,
         } )
       );
 
@@ -116,7 +122,7 @@ class ProductsProvider with ChangeNotifier {
 
     if( prodIndex >= 0 ) {
 
-      final url = 'https://komnata-shop-app.firebaseio.com/products/$id.json';
+      final url = 'https://komnata-shop-app.firebaseio.com/products/$id.json?auth=$authToken';
 
       final res =await http.patch(
         url,
@@ -140,7 +146,7 @@ class ProductsProvider with ChangeNotifier {
   } 
 
   Future<void> deleteProduct ( String id ) async {
-    final url = 'https://komnata-shop-app.firebaseio.com/products/$id.json';
+    final url = 'https://komnata-shop-app.firebaseio.com/products/$id.json?auth=$authToken';
 
     final existingProductIndex = _items.indexWhere(
       (element) => element.id == id
