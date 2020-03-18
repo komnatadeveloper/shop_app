@@ -34,9 +34,14 @@ class ProductsProvider with ChangeNotifier {
     return _items.where((element) => element.isFavorite).toList();
   }
 
-  Future<void> fetchAndSetProducts () async {
+  // Get Products
+  Future<void> fetchAndSetProducts ( [bool filterByUser = false] ) async {
 
-    var url = 'https://komnata-shop-app.firebaseio.com/products.json?auth=$authToken';
+    final filterString = filterByUser 
+      ? '&orderBy="ownerId"&equalTo="$userId"'
+      : '';
+
+    var url = 'https://komnata-shop-app.firebaseio.com/products.json?auth=$authToken$filterString';
 
     try {
 
@@ -91,6 +96,7 @@ class ProductsProvider with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
+          'ownerId': userId
           // 'isFavorite': product.isFavorite,
         } )
       );
