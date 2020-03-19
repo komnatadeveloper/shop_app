@@ -150,7 +150,7 @@ class _AuthCardState extends State<AuthCard> {
         );
       }
 
-      Navigator.of(context).pushReplacementNamed( ProductsOverviewScreen.routeName );
+      // Navigator.of(context).pushReplacementNamed( ProductsOverviewScreen.routeName );
     } on HttpMyException catch (err) {
       var errorMessage = 'Authentication failed';
 
